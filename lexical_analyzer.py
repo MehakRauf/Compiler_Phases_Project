@@ -140,7 +140,7 @@ def break_word(file, index):
             if char == "+" and index + 1 < len(file) and file[index + 1] == "+":
                 result.append("++")
                 index += 1
-            elif char == "-" and index + 1 < len(file) and file[index + 1] == "--":
+            elif char == "-" and index + 1 < len(file) and file[index + 1] == "-":
                 result.append("--")
                 index += 1
             elif char == "=" and index + 1 < len(file) and file[index + 1] == "=":
