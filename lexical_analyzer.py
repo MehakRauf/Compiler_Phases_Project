@@ -1,33 +1,27 @@
 import re
 
-class Token:
+class Token:  # token class
     def __init__(self, value_part, class_part, line_number):
         self.value_part = value_part
         self.class_part = class_part
         self.line_number = line_number
 
-    def __repr__(self):
+    def __repr__(self):  #return values for printing
         return f"Token(value='{self.value_part}', type='{self.class_part}', line={self.line_number})"
 
-def Validate_string(temp):
-    # A: Set of characters that can be escaped with a backslash or used as is
-    A = r"[\\|'|\"]"
-
-    # B: Set of characters that represent special sequences and cannot occur without a backslash
-    B = r"[bntro]"
-
-    # C: Set of characters that do not require a backslash
-    C = r"[@+]"
-
-    # D: Set of alphabetic characters and underscores (a-z, A-Z, _)
-    D = r"[a-zA-Z_]"
-
+def Validate_string(temp): #validate function
+    A = r"[\\|'|\"]" #  can not occur without / 
+    B = r"[bntro]"   # can and can not occur with backslash /
+    C = r"[@+.]"      #do not require a backslash
+    D = r"[a-zA-Z\s+_]"
     char_const = rf"(\\{A}|\\{B}|{B}|{C}|{D})"
-
+    #string and character RE
     strchar_pattern = rf"^\"({char_const})*\"$"
+    #number RE include int and float 
     number_pattern=r'^[0-9]+$|^[+-]?[0-9]*\.[0-9]+$'
-    # number_pattern = r'^[+-]?(\d*\.\d+|\d+\.\d*|\d+)([eE][+-]?\d+)?$'
+    #identifier RE start with alphabet or underscore and end with alpha or digit
     identifier_pattern = r'[a-zA-Z]|^[a-zA-Z_][a-zA-Z0-9_]*[a-zA-Z0-9]$'
+    #dic for operators
     operator_list = {
         "+": "PM",  # PM=Plus Minus
         "-": "PM",
@@ -44,6 +38,7 @@ def Validate_string(temp):
         "--": "Inc_Dec",
         "=": "="
     }
+    # dict for keywords
     keywords_list = {
         "class": "class",
         "public": "AM",  # AM=Access Modifier
@@ -70,6 +65,7 @@ def Validate_string(temp):
         "AND": "AND",
         "OR": "OR"
     }
+    #dict for punctuator
     punctuator_list = {
         "{": "{",
         "}": "}",
@@ -81,10 +77,10 @@ def Validate_string(temp):
         ",": ",",
         ";": ";"
     }
-
+    #matching temp with all scenarios
     if re.match(strchar_pattern, temp):
         return "StrChar"
-    elif re.match(number_pattern, temp):
+    elif re.match(number_pattern, temp): 
         return "num"
     elif temp in operator_list:
         return operator_list.get(temp)
@@ -96,38 +92,41 @@ def Validate_string(temp):
         return "ID"
     else:
         return "Invalid Lexeme"
-
+#function for breaking words from file
 def break_word(file, index):
-    temp = ""
+    temp = ""        #to store a complete word
     punct_array = [",", ".", "[", "]", "{", "}", "(", ")", ";"]
     opr_array = ["*", "/", "%"]
     check_opr_array = ["+", "-", "=", ">", "<", "!"]
     log_opr_arr = ["AND", "OR", "NOT"]
-    result = []
+    result = []      #to store the broken words
     
-    while index < len(file):
-        char = file[index]
+    while index < len(file):     #iterate until the file ends
+        char = file[index]       #reading file char by char
 
         # Handle spaces and new lines
         if char.isspace():
             if temp:
-                result.append(temp.strip())
+                result.append(temp.strip())    #strip removes spaces tabs newlines etc
                 temp = ""
             if char == "\n":
-                result.append(temp)
+                result.append(temp)        # to keep track of line change
             index += 1
             continue
 
         # Handle comments
         if char == "#":
-            if index + 1 < len(file) and file[index + 1] == "#":
-                index += 2  # Skip the ##
+            if index + 1 < len(file) and file[index + 1] == "#":   #check for multiline comment
+                index += 2  # if ## is found move index by 2 (Skip the ##)
+                # iterate through the file until the ## is found(indicating multi line comment is ended)
                 while index + 1 < len(file) and not (file[index] == "#" and file[index + 1] == "#"):
                     index += 1
                 if index + 1 < len(file) and file[index] == "#" and file[index + 1] == "#":
                     index += 2  # Skip the ##
+                result.append(temp)
                 continue
             else:
+                #single line comment(until new line starts)
                 while index < len(file) and file[index] != "\n":
                     index += 1
                 continue
@@ -138,10 +137,10 @@ def break_word(file, index):
                 result.append(temp.strip())
                 temp = ""
             if char == "+" and index + 1 < len(file) and file[index + 1] == "+":
-                result.append("++")
+                result.append("++")   #if there is increment oper 
                 index += 1
             elif char == "-" and index + 1 < len(file) and file[index + 1] == "-":
-                result.append("--")
+                result.append("--")   #if there is decrement oper 
                 index += 1
             elif char == "=" and index + 1 < len(file) and file[index + 1] == "=":
                 result.append("==")
@@ -182,33 +181,57 @@ def break_word(file, index):
                     result.append(temp.strip())
                     temp = ""
                 result.append(char)
-
+        # handle string or char
         elif char == "\"":
-            if temp and temp[-1] == "\"":
+            if temp:
                 result.append(temp.strip())
                 temp = ""
+            quote_type = char       #store "
             temp += char
+            index += 1
+            #iterate through the file 
+            while index < len(file):
+                char = file[index]
+                temp += char
+                if char == "\\" and index + 1 < len(file):  # Handle escape sequences
+                    temp += file[index + 1]
+                    index += 1
+                elif char == quote_type:  # Found the closing quote
+                    break
+                index += 1
+           
+            result.append(temp.strip())
+            temp = ""
+        #not a break character
         else:
             temp += char
 
-        index += 1
+        index += 1  #increment index
     
     if temp:
-        result.append(temp.strip())
+        result.append(temp.strip())    #append temp
 
     return result, index
 
-# Example usage
 with open("C:\\Users\\Excalibur\\Downloads\\Labs\\tcs\\file.txt", "r") as f:
     file = f.read()
 index = 0
 line_number=1
 tokens, _ = break_word(file, index)
+#iterate through the array return by break_word function
 for token in tokens:
-    if token == "":
+    if token.startswith("##") or token.endswith("##"):
+        print(token)
+        line_number += 2
+    elif token == "":
         line_number += 1
-    else:
-        cp = Validate_string(token)  # Assuming Validate_string is defined
+    elif "\n" in token:
+        line_number += 1
+        cp = Validate_string(token)
         t1 = Token(token, cp, line_number)
-        print(t1)  # This will call __repr__ method automatically
-break_word(file,0)
+        print(f"Token(value='{t1.value_part}' type='{t1.class_part}' line='{t1.line_number-1}','{t1.line_number}')")
+    else:
+        cp = Validate_string(token)
+        t1 = Token(token, cp, line_number)
+        print(t1)
+ 
