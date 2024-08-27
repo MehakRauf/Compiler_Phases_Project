@@ -41,23 +41,23 @@ def Validate_string(temp): #validate function
     # dict for keywords
     keywords_list = {
         "class": "class",
-        "public": "AM",  # AM=Access Modifier
-        "private": "AM",
+        "universal": "AM",  # AM=Access Modifier
+        "restricted": "AM",
         "void": "void",
-        "extends": "extends",
-        "return": "return",
+        "ext": "extends",
+        "ret": "return",
         "this": "this",
         "new": "new",
         "final": "final",
         "num": "DT",  # DT=Data Type
         "StrChar": "DT",
         "when": "when",
-        "else": "else",
+        "otherwise": "else",
         "input": "input",
-        "print": "print",
+        "display": "print",
         "while": "while",
-        "break": "break",
-        "continue": "continue",
+        "brk": "break",
+        "cont": "continue",
         "try": "try",
         "catch": "catch",
         "finally": "finally",
