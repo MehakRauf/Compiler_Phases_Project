@@ -138,22 +138,28 @@ def break_word(file):
                 yield Token(temp.strip(), cp, line_number)
                 temp = ""
             if char == "+" and index + 1 < len(file) and file[index + 1] == "+":
-                yield Token("++", "Inc_Dec", line_number)  # increment operator
+                cp = Validate_string("++")
+                yield Token("++", cp, line_number)  # increment operator
                 index += 1
             elif char == "-" and index + 1 < len(file) and file[index + 1] == "-":
-                yield Token("--", "Inc_Dec", line_number)  # decrement operator
+                cp = Validate_string("--")
+                yield Token("--", cp, line_number)  # decrement operator
                 index += 1
             elif char == "=" and index + 1 < len(file) and file[index + 1] == "=":
-                yield Token("==", "ROP", line_number)
+                cp = Validate_string("==")
+                yield Token("==", cp , line_number)
                 index += 1
             elif char == "<" and index + 1 < len(file) and file[index + 1] == "=":
-                yield Token("<=", "ROP", line_number)
+                cp = Validate_string("<=")
+                yield Token("<=", cp, line_number)
                 index += 1
             elif char == ">" and index + 1 < len(file) and file[index + 1] == "=":
-                yield Token(">=", "ROP", line_number)
+                cp = Validate_string(">=")
+                yield Token(">=", cp, line_number)
                 index += 1
             elif char == "!" and index + 1 < len(file) and file[index + 1] == "=":
-                yield Token("!=", "ROP", line_number)
+                cp = Validate_string("!=")
+                yield Token("!=", cp, line_number)
                 index += 1
             else:
                 yield Token(char, Validate_string(char), line_number)
@@ -184,7 +190,8 @@ def break_word(file):
                 if char == "\n":
                     line_number += 1
                 index += 1
-            yield Token(temp.strip(), "StrChar", start_line)
+            cp = Validate_string(temp.strip())
+            yield Token(temp.strip(), cp, start_line)
             temp = ""
         # not a break character
         else:
