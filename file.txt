@@ -1,0 +1,18 @@
+class A_B_C=b55
+int 9abc==77;
+if-else(a<==b&=<7)   ##multi line comment 
+addd;ffhg
+yucvashbfh uhqw return
+fduhsdJS
+cghchgc##
+Char ch='\r'+'\s' 
+#single line comment
+return a.b
+}}
+interface A_B extends 55bc
+while (a<==!!!=55++=x)
+"multi line string
+is this"
+}} #single line comment
+StrChar str ="abc+=7\'"+=5"++b"
+++
