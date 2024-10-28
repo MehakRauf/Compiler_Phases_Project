@@ -7,7 +7,7 @@ class Token:  # token class
         self.line_number = line_number
 
     def __repr__(self):  # return values for printing
-        return f"Token(value='{self.value_part}', type='{self.class_part}', line={self.line_number})"
+        return f"Token('{self.value_part}', '{self.class_part}', {self.line_number})"
 
 def Validate_string(temp):  # validate function
     A = r"[\\|'|\"]"  # can not occur without /
@@ -15,69 +15,24 @@ def Validate_string(temp):  # validate function
     C = r"[@+.]"  # do not require a backslash
     D = r"[a-zA-Z\s+_]"
     char_const = rf"(\\{A}|\\{B}|{B}|{C}|{D})"
-    # string and character RE
     strchar_pattern = rf"^\"({char_const})*\"$"
-    # number RE include int and float
     number_pattern = r'^[0-9]+$|^[+-]?[0-9]*\.[0-9]+$'
-    # identifier RE start with alphabet or underscore and end with alpha or digit
     identifier_pattern = r'[a-zA-Z]|^[a-zA-Z_][a-zA-Z0-9_]*[a-zA-Z0-9]$'
-    # dic for operators
     operator_list = {
-        "+": "PM",  # PM=Plus Minus
-        "-": "PM",
-        "*": "MDM",  # MDM=Multiply Divide Modulo
-        "/": "MDM",
-        "%": "MDM",
-        "<": "ROP",  # ROP=Relational Operator
-        ">": "ROP",
-        "<=": "ROP",
-        ">=": "ROP",
-        "!=": "ROP",
-        "==": "ROP",
-        "++": "Inc_Dec",
-        "--": "Inc_Dec",
-        "=": "="
+        "+": "PM", "-": "PM", "*": "MDM", "/": "MDM", "%": "MDM",
+        "<": "ROP", ">": "ROP", "<=": "ROP", ">=": "ROP", "!=": "ROP", "==": "ROP",
+        "++": "Inc_Dec", "--": "Inc_Dec", "=": "="
     }
-    # dict for keywords
     keywords_list = {
-        "class": "class",
-        "universal": "AM",  # AM=Access Modifier
-        "restricted": "AM",
-        "void": "void",
-        "ext": "extends",
-        "ret": "return",
-        "this": "this",
-        "new": "new",
-        "final": "final",
-        "num": "DT",  # DT=Data Type
-        "StrChar": "DT",
-        "when": "when",
-        "otherwise": "else",
-        "input": "input",
-        "display": "print",
-        "while": "while",
-        "brk": "break",
-        "cont": "continue",
-        "try": "try",
-        "catch": "catch",
-        "finally": "finally",
-        "NOT": "NOT",
-        "AND": "AND",
-        "OR": "OR"
+        "class": "class", "universal": "AM", "restricted": "AM", "void": "void", 
+        "extends": "extends", "return": "return", "this": "this", "new": "new", "final": "final",
+        "num": "DT", "StrChar": "DT", "when": "when", "otherwise": "otherwise", "input": "input", 
+        "display": "display", "while": "while", "brk": "break", "cont": "continue", 
+        "try": "try", "catch": "catch", "finally": "finally", "NOT": "NOT", "AND": "AND", "OR": "OR"
     }
-    # dict for punctuators
     punctuator_list = {
-        "{": "{",
-        "}": "}",
-        "(": "(",
-        ")": ")",
-        "[": "[",
-        "]": "]",
-        ".": ".",
-        ",": ",",
-        ";": ";"
+        "{": "{", "}": "}", "(": "(", ")": ")", "[": "[", "]": "]", ".": ".", ",": ",", ";": ";"
     }
-    # matching temp with all scenarios
     if re.match(strchar_pattern, temp):
         return "StrChar"
     elif re.match(number_pattern, temp):
@@ -94,7 +49,8 @@ def Validate_string(temp):  # validate function
         return "Invalid Lexeme"
 
 def break_word(file):
-    temp = ""  # to store a complete word
+    tokens = []  # List to store tokens
+    temp = ""
     punct_array = [",", ".", "[", "]", "{", "}", "(", ")", ";"]
     opr_array = ["*", "/", "%"]
     check_opr_array = ["+", "-", "=", ">", "<", "!"]
@@ -104,109 +60,132 @@ def break_word(file):
     while index < len(file):  # iterate until the file ends
         char = file[index]  # reading file char by char
 
-        # Handle spaces and new lines
         if char.isspace():
             if temp:
                 cp = Validate_string(temp.strip())
-                yield Token(temp.strip(), cp, line_number)
+                tokens.append(Token(temp.strip(), cp, line_number))
                 temp = ""
             if char == "\n":
                 line_number += 1
             index += 1
             continue
 
-        # Handle comments
         if char == "#":
-            if index + 1 < len(file) and file[index + 1] == "#":  # check for multiline comment
-                index += 2  # Skip the ##
+            if index + 1 < len(file) and file[index + 1] == "#":
+                index += 2
                 while index + 1 < len(file) and not (file[index] == "#" and file[index + 1] == "#"):
                     if file[index] == "\n":
                         line_number += 1
                     index += 1
                 if index + 1 < len(file) and file[index] == "#" and file[index + 1] == "#":
-                    index += 2  # Skip the ##
+                    index += 2
                 continue
             else:
                 while index < len(file) and file[index] != "\n":
                     index += 1
                 continue
 
-        # Handle operators
         if char in opr_array or char in check_opr_array:
             if temp:
                 cp = Validate_string(temp.strip())
-                yield Token(temp.strip(), cp, line_number)
+                tokens.append(Token(temp.strip(), cp, line_number))
                 temp = ""
             if char == "+" and index + 1 < len(file) and file[index + 1] == "+":
                 cp = Validate_string("++")
-                yield Token("++", cp, line_number)  # increment operator
+                tokens.append(Token("++", cp, line_number))
                 index += 1
             elif char == "-" and index + 1 < len(file) and file[index + 1] == "-":
                 cp = Validate_string("--")
-                yield Token("--", cp, line_number)  # decrement operator
+                tokens.append(Token("--", cp, line_number))
                 index += 1
             elif char == "=" and index + 1 < len(file) and file[index + 1] == "=":
                 cp = Validate_string("==")
-                yield Token("==", cp , line_number)
+                tokens.append(Token("==", cp , line_number))
                 index += 1
             elif char == "<" and index + 1 < len(file) and file[index + 1] == "=":
                 cp = Validate_string("<=")
-                yield Token("<=", cp, line_number)
+                tokens.append(Token("<=", cp, line_number))
                 index += 1
             elif char == ">" and index + 1 < len(file) and file[index + 1] == "=":
                 cp = Validate_string(">=")
-                yield Token(">=", cp, line_number)
+                tokens.append(Token(">=", cp, line_number))
                 index += 1
             elif char == "!" and index + 1 < len(file) and file[index + 1] == "=":
                 cp = Validate_string("!=")
-                yield Token("!=", cp, line_number)
+                tokens.append(Token("!=", cp, line_number))
                 index += 1
             else:
-                yield Token(char, Validate_string(char), line_number)
+                tokens.append(Token(char, Validate_string(char), line_number))
         elif char in punct_array:
-            if temp:
-                cp = Validate_string(temp.strip())
-                yield Token(temp.strip(), cp, line_number)
-                temp = ""
-            yield Token(char, char, line_number)
-        # handle string or char
+            if char == '.':
+                # Check for previous and next parts around '.'
+                prev_part = temp
+                next_part = file[index + 1:].lstrip()
+                prev_word = re.findall(r'\w+', prev_part)[-1] if re.findall(r'\w+', prev_part) else ''
+                next_word = re.findall(r'\w+', next_part)[0] if re.findall(r'\w+', next_part) else ''
+
+                # Check if the previous part is a number and the next part starts with a digit
+                if prev_word.isdigit() and next_word.isdigit():
+                    if '.' in temp:  # If there's already a dot in temp, break the word
+                        if temp.strip():
+                            cp = Validate_string(temp.strip())
+                            tokens.append(Token(temp.strip(), cp, line_number))
+                        temp = '.'  # Start a new token with the dot
+                    else:
+                        temp += char  # Add the '.' to temp since it's part of a number
+                else:
+                    if temp:
+                        cp = Validate_string(temp.strip())
+                        tokens.append(Token(temp.strip(), cp, line_number))
+                        temp = ""
+                    tokens.append(Token(char, Validate_string(char), line_number))  # Treat the '.' as a punctuator
+            else:
+                if temp:
+                    cp = Validate_string(temp.strip())
+                    tokens.append(Token(temp.strip(), cp, line_number))
+                    temp = ""
+                tokens.append(Token(char, Validate_string(char), line_number))  # Add the punctuation token
+
         elif char == "\"":
             if temp:
                 cp = Validate_string(temp.strip())
-                yield Token(temp.strip(), cp, line_number)
+                tokens.append(Token(temp.strip(), cp, line_number))
                 temp = ""
-            quote_type = char  # store "
+            quote_type = char
             temp += char
             index += 1
             start_line = line_number
             while index < len(file):
                 char = file[index]
                 temp += char
-                if char == "\\" and index + 1 < len(file):  # Handle escape sequences
+                if char == "\\" and index + 1 < len(file):
                     temp += file[index + 1]
                     index += 1
-                elif char == quote_type:  # Found the closing quote
+                elif char == quote_type:
                     break
                 if char == "\n":
                     line_number += 1
                 index += 1
             cp = Validate_string(temp.strip())
-            yield Token(temp.strip(), cp, start_line)
+            tokens.append(Token(temp.strip(), cp, start_line))
             temp = ""
-        # not a break character
         else:
             temp += char
 
         index += 1  # increment index
-    
+
     if temp:
         cp = Validate_string(temp.strip())
-        yield Token(temp.strip(), cp, line_number)
+        tokens.append(Token(temp.strip(), cp, line_number))
+
+    return tokens
 
 # file reading
-with open("C:\\Users\\Excalibur\\Downloads\\Labs\\tcs\\file.txt", "r") as f:
+with open("file.txt", "r") as f:
     file = f.read()
 
-# Tokenize and print tokens
-for token in break_word(file):
-    print(token)
+# Tokenize
+tokens = break_word(file)
+
+for i in range (len(tokens)):
+    print(tokens[i])
