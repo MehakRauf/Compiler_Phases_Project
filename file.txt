@@ -1,18 +1,40 @@
-class A_B_C=b55
-int 9abc==77;
-if-else(a<==b&=<7)   ##multi line comment 
-addd;ffhg
-yucvashbfh uhqw return
-fduhsdJS
-cghchgc##
-Char ch='\r'+'\s' 
-#single line comment
-return a.b
-}}
-interface A_B extends 55bc
-while (a<==!!!=55++=x)
-"multi line string
-is this"
-}} #single line comment
-StrChar str ="abc+=7\'"+=5"++b"
-++
+when (x > 10) {
+    x = 10
+}
+otherwise {
+    x = 11.32
+}
+
+# Class definition
+universal class student {
+    universal void details(StrChar name, StrChar stID) {
+       # Input
+        input("Enter your name")
+        
+        # Print
+        display(name)
+        
+        # Return
+        return stID
+    }
+}
+
+# Try-catch example
+try {
+    display("No error")
+} 
+catch (error e) {
+    display(e)
+}
+finally{
+    display("Done")
+}
+
+# Child class
+universal class student extends university {
+    x = 10
+}
+
+# Object creation
+student s1 = new student()
+
