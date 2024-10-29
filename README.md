@@ -26,7 +26,7 @@ This project implements a simple compiler with three main phases: **Lexical Anal
 - It builds a parse tree that represents the structure of the code.
 - The Parser class includes methods for parsing statements, expressions, function calls, loops, and other language constructs.
 
-### Files
+### File
 - `syntax_analyzer.py`: Contains parsing logic using Token and Parser classes.
 
 ## 3. Semantic Analysis
@@ -37,7 +37,7 @@ This project implements a simple compiler with three main phases: **Lexical Anal
 - The semantic analyzer checks for valid variable types, function definitions, scopes, and other context-dependent rules.
 - This phase detects issues like type mismatches, undeclared variables, and function misuse.
 
-### Files
+### File
 - `syntax_analyzer.py`: Implements type-checking and other semantic validation logic.
 
 ## Future Improvements
